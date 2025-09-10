@@ -1,0 +1,23 @@
+import express from 'express'
+import dotenv from 'dotenv'
+import {userRouter} from "./routes/users.routes.js"
+import getPool from './services/mariadb.pool.js'
+import {initDependencies} from './dependencies/initDependencies.js'
+import { missionRouter } from './routes/missions.routes.js'
+import { candidaturesRouter } from './routes/candidatures.routes.js'
+
+
+dotenv.config()
+const app = express()
+
+app.use(express.json())
+const pool = getPool()
+const{userController, missionController, candidaturesController}=initDependencies(pool)
+
+app.use('/users', userRouter(userController))
+app.use('/missions',missionRouter(missionController))
+app.use('/candidatures', candidaturesRouter(candidaturesController))
+
+app.listen(process.env.CLIENT_URL,()=>{
+    console.log(`Server in running at http://localhost:${process.env.CLIENT_URL}`)
+})
