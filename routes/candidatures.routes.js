@@ -1,12 +1,14 @@
 import {Router} from "express";
+import authentificationToken from "../middlewares/midd.authenticate.js";
+import authorizeRoles from "../middlewares/authorizeRoles.js";
 
 
 export function candidaturesRouter(candidaturesController){
 const router = Router();
-router.post("/create", (req,res) => candidaturesController.createCandidature(req,res));
-router.get('/pending',(req,res)=>candidaturesController.getAllPendingCandidatures(req,res));
-router.put('/:id', (req, res) => candidaturesController.updateCandidatureStatus(req, res));  
-
+router.post("/create",authentificationToken,authorizeRoles("benevole"), (req,res) => candidaturesController.createCandidature(req,res));
+router.get('/pending',authentificationToken,authorizeRoles("association"),(req,res)=>candidaturesController.getAllPendingCandidatures(req,res));
+router.put('/:id',authentificationToken,authorizeRoles("association"), (req, res) => candidaturesController.updateCandidatureStatus(req, res));  
+router.get('/mes-pendings',authentificationToken,authorizeRoles("association"),(req,res)=>candidaturesController.getPendingCandidaturesForAssociation(req, res));
 return router;
 
 }

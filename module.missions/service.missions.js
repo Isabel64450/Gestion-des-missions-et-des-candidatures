@@ -32,7 +32,9 @@ async getAllMissions() {
   }
 
 
-
+async getMissionsByAssociation(associationId) {
+  return this.missionRepository.findMissionsByAssociation(associationId);
+}
 
 
 }

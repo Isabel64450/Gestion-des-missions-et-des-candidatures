@@ -71,7 +71,13 @@ async getAllMissions() {
     }
   }
 
-
+async findMissionsByAssociation(associationId) {
+  const [rows] = await this.pool.query(
+    'SELECT * FROM missions WHERE association_id = ?',
+    [associationId]
+  );
+  return rows;
+}
 
 
 

@@ -3,57 +3,34 @@ class CandidatureRepository {
     this.pool = pool;
   }
 
- async createCandidature(userId, missionId) {
-  try {
-    
-    const [mission] = await this.pool.query(
-      "SELECT id FROM missions WHERE id = ?",
-      [missionId]
-    );
-    if (mission.length === 0) {
-      throw new Error("Mission introuvable");
-    }
-
-    
-    const [user] = await this.pool.query(
-      "SELECT id FROM users WHERE id = ?",
+async hasPendingCandidature(userId) {
+    const [result] = await this.pool.query(
+      'SELECT * FROM candidatures WHERE user_id = ? AND status = "En attente"',
       [userId]
+      
     );
-    if (user.length === 0) {
-      throw new Error("Utilisateur introuvable");
-    }
-
     
-    const [existing] = await this.pool.query(
-      "SELECT id FROM candidatures WHERE user_id = ? AND mission_id = ?",
+    return result.length > 0;
+    
+  }
+
+async createCandidature(userId, missionId) {
+    const result = await this.pool.query(
+      'INSERT INTO candidatures (user_id, mission_id, status) VALUES (?, ?, "En attente")',
       [userId, missionId]
     );
-    if (existing.length > 0) {
-      throw new Error("Vous avez déjà postulé à cette mission");
-    }
+    return result.insertId; }
 
-    
-    const [result] = await this.pool.query(
-      `INSERT INTO candidatures (mission_id, user_id)
-       VALUES (?, ?)`,
-      [missionId, userId]
-    );
 
-    return result.insertId;
-  } catch (err) {
-    console.error("Erreur dans CandidatureRepository.createCandidature :", err.message);
-    throw err;
-  }
-}
 
 async getAllPendingCandidatures() {
   try {
     const [rows] = await this.pool.query(`
       SELECT 
   c.id AS candidature_id,
-  u.name AS association,
+  u.name AS benevole,
   m.title AS mission,
-  a.name AS benevole,
+  a.name AS association,
   c.status,
   c.applied_at
 FROM candidatures c
@@ -96,9 +73,39 @@ async updateCandidatureStatus(candidatureId, newStatus) {
   }
 }
 
+async findPendingCandidaturesByAssociation(associationId) {
+  const [rows] = await this.pool.query(
+    `
+    SELECT 
+  c.*, 
+  u.name AS benevole_name, 
+  m.title AS mission_title
+FROM candidatures c
+JOIN missions m ON c.mission_id = m.id
+JOIN users u ON c.user_id = u.id
+WHERE m.association_id = ? AND c.status = 'en attente';
+    `,
+    [associationId]
+  );
 
+  return rows;
+}
 
+async getAssociationIdFromCandidature(candidatureId) {
+  const [rows] = await this.pool.query(
+    `
+    SELECT m.association_id
+    FROM candidatures c
+    JOIN missions m ON c.mission_id = m.id
+    WHERE c.id = ?
+    `,
+    [candidatureId]
+  );
 
+  if (rows.length === 0) return null;
+
+  return rows[0].association_id;
+}
 
 
 

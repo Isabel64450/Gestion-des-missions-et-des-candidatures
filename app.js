@@ -1,5 +1,6 @@
 import express from 'express'
 import dotenv from 'dotenv'
+import cookieParser from 'cookie-parser'
 import {userRouter} from "./routes/users.routes.js"
 import getPool from './services/mariadb.pool.js'
 import {initDependencies} from './dependencies/initDependencies.js'
@@ -11,6 +12,9 @@ dotenv.config()
 const app = express()
 
 app.use(express.json())
+app.use(cookieParser())
+
+
 const pool = getPool()
 const{userController, missionController, candidaturesController}=initDependencies(pool)
 
