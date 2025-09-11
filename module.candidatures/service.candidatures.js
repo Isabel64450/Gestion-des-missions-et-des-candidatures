@@ -44,7 +44,17 @@ async getPendingCandidaturesByAssociation(associationId) {
   return await this.candidatureRepository.findPendingCandidaturesByAssociation(associationId);
 }
 
-
+async getCandidaturesByBenevole(benevoleId) {
+  const candidatures = await this.candidatureRepository.findCandidaturesByBenevole(benevoleId)
+  const formattedCandidatures = candidatures.map(c=>({
+    ...c, applied_at:new Date(c.applied_at).toLocaleDateString('fr-FR'),
+    mission_date: new Date(c.mission_date).toLocaleDateString('fr-FR')
+  }))
+  
+  
+  
+  return formattedCandidatures;
+}
 
 
 }

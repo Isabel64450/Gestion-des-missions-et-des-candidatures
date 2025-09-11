@@ -107,7 +107,23 @@ async getAssociationIdFromCandidature(candidatureId) {
   return rows[0].association_id;
 }
 
-
+async findCandidaturesByBenevole(benevoleId) {
+  const [rows] = await this.pool.query(
+    `
+    SELECT 
+      c.*, 
+      m.title AS mission_title, 
+      m.date AS mission_date,
+      m.description AS mission_description
+    FROM candidatures c
+    JOIN missions m ON c.mission_id = m.id
+    WHERE c.user_id = ?
+    ORDER BY c.applied_at DESC
+    `,
+    [benevoleId]
+  );
+  return rows;
+}
 
 
 

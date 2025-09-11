@@ -28,9 +28,17 @@ async deleteMission(id) {
   return true;
 }
 async getAllMissions() {
-    return await this.missionRepository.getAllMissions();
-  }
+  const missions = await this.missionRepository.getAllMissions();
 
+  
+  const formattedMissions = missions.map(mission => ({
+    ...mission,
+    date: new Date(mission.date).toLocaleDateString('fr-FR'),
+    created_at: new Date(mission.created_at).toLocaleDateString('fr-FR')
+  }));
+
+  return formattedMissions;
+}
 
 async getMissionsByAssociation(associationId) {
   return this.missionRepository.findMissionsByAssociation(associationId);

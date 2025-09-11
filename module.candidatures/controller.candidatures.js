@@ -69,6 +69,25 @@ async getPendingCandidaturesForAssociation(req, res) {
   }
 }
 
+async getCandidaturesForBenevole(req, res) {
+  try {
+    const benevoleId = req.user.id;  
+
+    const candidatures = await this.candidatureService.getCandidaturesByBenevole(benevoleId);
+
+    if (candidatures.length === 0) {
+      return res.status(200).json({ message: "Vous n'avez pas encore postulé à une mission." });
+    }
+
+    res.status(200).json(candidatures);
+  } catch (error) {
+    console.error("Erreur dans getCandidaturesForBenevole :", error.message);
+    res.status(500).json({ message: "Erreur lors de la récupération des candidatures." });
+  }
+}
+
+
+
 
 
 

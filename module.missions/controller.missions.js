@@ -12,10 +12,10 @@ class MissionController {
     }      
      missionData.association_id =user.id;
       const missionId = await this.missionService.createMission(missionData);
-
+      const { association_id, ...missionWithoutAssociationId } = missionData;
       res.status(201).json({
         message: "Mission créée avec succès",
-        mission: { id: missionId, ...missionData }
+        mission: { id: missionId, ...missionWithoutAssociationId }
       });
     } catch (error) {
       console.error('MissionController.createMission :', error.message);

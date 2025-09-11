@@ -35,7 +35,8 @@ async loginUser(req, res) {
     if (!user) {
       return res.status(401).json({ message: "Identifiants invalides" });
     }
-    return res.json({message:'Connexion réussie', user,token})    
+    const {id,...userWithoutId}=user
+    return res.json({message:'Connexion réussie', user:userWithoutId})    
       
   } catch (err) {
     console.error("Erreur de connexion :", err);
