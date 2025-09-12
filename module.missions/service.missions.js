@@ -41,7 +41,11 @@ async getAllMissions() {
 }
 
 async getMissionsByAssociation(associationId) {
-  return this.missionRepository.findMissionsByAssociation(associationId);
+  const missions = await this.missionRepository.findMissionsByAssociation(associationId);
+  const formatedDateMissions = missions.map(missions=>({...missions,date:new Date(missions.date).toLocaleDateString('fr-FR'),
+    created_at:new Date(missions.created_at).toLocaleDateString('fr-FR')
+  }))
+  return formatedDateMissions
 }
 
 

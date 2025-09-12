@@ -1,54 +1,95 @@
-Sujet – Évaluation CCP2 : Gestion des missions et des candidatures
+Projet de Gestion de Missions et Candidatures – Centre de Formation
+ Présentation
 
-Contexte :
-Création d'une plateforme permettant aux bénévoles de postuler à des missions proposées par des associations. Une fois qu’un bénévole postule, l’association peut accepter ou refuser sa candidature.
+Cette application web permet :
 
- Découpage du projet en tâches
+aux associations de publier des missions,
 
-Avant de commencer à coder, voici la liste des tâches identifiées pour mener à bien ce projet :
+aux bénévoles de postuler à des missions,
 
- Préparation du projet
+et à chaque partie de gérer les candidatures.
 
- Analyser le cahier des charges / contexte
+Le projet a été réalisé dans le cadre d’un stage au sein du groupe AFEC. Il respecte l’architecture MVC et utilise Express.js, MariaDB, et le pattern repository-service-controller pour séparer les responsabilités.
 
- Définir les fonctionnalités principales
+ Installation et Lancement
+1. Cloner le dépôt
+git clone https://github.com/ton-projet.git
+cd ton-projet
 
- Choisir les technologies (stack technique)
+2. Installer les dépendances
+npm install
+
+3. Configuration des variables d’environnement
+
+Crée un fichier .env à la racine avec les infos suivantes :
+
+PORT=3000
+JWT_SECRET=tonSecretIci
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=missions_db
+
+4. Lancer le serveur
+npm run dev
 
 
- Backend
+Le serveur sera disponible sur : http://localhost:3000
 
- Définir la structure de la base de données
+Initialisation des dépendances
 
- Mettre en place les modèles (Users, Missions, Candidatures)
+Le fichier initDependencies.js instancie toutes les classes nécessaires (repository, service, controller) :
 
- Créer les routes API (CRUD utilisateurs, missions, candidatures)
+const userRepository = new UserRepository(pool);
+const userService = new UserService(userRepository);
+const userController = new UserController(userService);
 
- Authentification et autorisations (JWT ou session)
 
- Gestion des statuts de candidature (en attente, acceptée, refusée)
+Cela permet de centraliser la logique métier et d’assurer la maintenance du code avec une meilleure lisibilité et testabilité.
+
+Justification du choix technologique
+Pourquoi SQL (MariaDB) ?
+
+ Intégrité des données : relations fortes entre utilisateurs, missions et candidatures.
+ Contraintes de schéma strictes : utile pour garantir la cohérence métier.
+ Requêtes relationnelles : jointures optimisées, très utiles pour les vues complexes.
+
+
 
 Fonctionnalités principales
 
- Les bénévoles peuvent consulter et postuler à des missions
+ Authentification via JWT et Cookies HTTP-only
 
- Les associations peuvent gérer leurs missions
+ Rôles : benevole et association
 
- Les associations peuvent accepter/refuser les candidatures
+ CRUD Missions (associations uniquement)
 
+ Postuler à une mission (1 à la fois, pour les bénévoles)
 
- Tests & Validation
+ Voir les candidatures liées à ses missions
 
- Vérification de la sécurité (accès, permissions)
+ Modifier le statut d’une candidature
 
- Tests des routes et fonctionnalités
+ Stack technique
 
- Validation des formulaires
+Backend : Node.js, Express.js
 
- Finalisation
+Base de données : MariaDB
 
- Nettoyage du code
+ORM / Accès DB : MySQL2 (promesse)
 
- Rédaction de la documentation
+Auth : JWT + Cookies
 
- Déploiement (optionnel)# Gestion-des-missions-et-des-candidatures
+Architecture : MVC modulaire + Repository/Service/Controller
+
+Informations complémentaires
+
+Documentation API disponible dans Postman (collection exportée)
+
+Code organisé par modules :
+
+module.users/
+module.missions/
+module.candidatures/
+routes/
+middlewares/

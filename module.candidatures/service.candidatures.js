@@ -15,7 +15,9 @@ class CandidatureService {
   }
 
   async getAllPendingCandidatures() {
-  return await this.candidatureRepository.getAllPendingCandidatures();
+    const candidatures = await this.candidatureRepository.getAllPendingCandidatures();
+    const candidaturesFormatedDate=candidatures.map(c=>({...c,applied_at: new Date(c.applied_at).toLocaleDateString('fr-FR')}))
+  return candidaturesFormatedDate
 }
 
 async updateCandidatureStatus(candidatureId, newStatus, associationIdFromToken) {
@@ -41,7 +43,9 @@ async updateCandidatureStatus(candidatureId, newStatus, associationIdFromToken) 
 }
 
 async getPendingCandidaturesByAssociation(associationId) {
-  return await this.candidatureRepository.findPendingCandidaturesByAssociation(associationId);
+  const candidatures = await this.candidatureRepository.findPendingCandidaturesByAssociation(associationId);
+  const formatted = candidatures.map(c=>({...c,applied_at: new Date(c.applied_at).toLocaleDateString('fr-FR')}))
+  return formatted
 }
 
 async getCandidaturesByBenevole(benevoleId) {

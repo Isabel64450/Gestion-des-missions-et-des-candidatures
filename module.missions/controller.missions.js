@@ -73,7 +73,8 @@ async getMissionsByAssociation(req, res) {
 if (missions.length === 0) {
       return res.status(200).json({ message: "Votre association n'ai pas de mission pour le moment." });
     }
-    res.status(200).json(missions);
+    const missionsWithoutAssoId = missions.map(({ association_id, ...rest }) => rest);
+    res.status(200).json(missionsWithoutAssoId);
   } catch (error) {
     console.error('MissionController.getMissionsByAssociation:', error.message);
     res.status(500).json({ message: 'Erreur lors de la récupération des missions' });
