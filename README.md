@@ -1,4 +1,6 @@
-Projet de Gestion de Missions et Candidatures – Centre de Formation
+Projet de Gestion de Missions et Candidatures 
+
+ 
  Présentation
 
 Cette application web permet :
