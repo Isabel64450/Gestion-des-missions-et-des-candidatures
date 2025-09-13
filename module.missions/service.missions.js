@@ -5,14 +5,16 @@ class MissionService {
 
   async createMission(missionData) {
    
-    return await this.missionRepository.createMission(missionData);
+    return this.missionRepository.createMission(missionData);
   }
 
 async updateMission(id, missionData) {
     const updated = await this.missionRepository.updateMission(id, missionData);
 
     if (!updated) {
-      throw new Error("La mission n'existe pas ou n'a pas pu être modifiée");
+      const error = new Error("La mission n'existe pas ou n'a pas pu être modifiée");
+    error.name = "NotFound";
+    throw error;    
     }
 
     return { id, ...missionData };
@@ -22,7 +24,9 @@ async deleteMission(id) {
   const deleted = await this.missionRepository.deleteMission(id);
 
   if (!deleted) {
-    throw new Error("Mission introuvable ou déjà supprimée");
+    const error = new Error("Mission introuvable ou déjà supprimée");
+    error.name = "NotFound";  
+    throw error;
   }
 
   return true;

@@ -11,7 +11,15 @@ async createUser(userData){
     }
     catch(err){
         console.error('Erreur dans UserRepository.createUser :', err.message);
-    throw new Error("Erreur lors de l'insertion de l'utilisateur");
+        if (err.code === 'ER_DUP_ENTRY'){
+          const error = new Error("Cet utilisateur existe déjà.");
+          error.name = "UserAlreadyExist";
+          throw error
+        }
+        const error = new Error("Erreur lors de l'insertion dans la base de données");
+        error.name = "DatabaseException";
+        throw error
+       
     }
 }
 async getUserByEmail(email) {
@@ -23,7 +31,8 @@ async getUserByEmail(email) {
     return rows[0] || null; 
   } catch (err) {
     console.error("Erreur dans UserRepository.getUserByEmail :", err.message);
-    throw new Error("Erreur lors de la récupération de l'utilisateur par email");
+    err.name = "DatabaseException"
+    throw err;
   }
 }
 

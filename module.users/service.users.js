@@ -23,20 +23,29 @@ class UserService {
         role: userData.role
       };
     } catch (error) {
-      console.error('Erreur dans UserService.createUser :', error.message);
-      throw new Error("Erreur lors de la création de l'utilisateur");
+      
+      throw error
     }
   }
 
 async loginUser(email, password){
     const user = await this.userRepository.getUserByEmail(email)
     
-    if(!user) throw new Error("Une erreur s'est produite : l'adresse e-mail et/ou le mot de passe ne correspondent pas.")
+    if(!user) {
+      const err = new Error("Une erreur s'est produite : l'adresse e-mail et/ou le mot de passe ne correspondent pas.")
+     err.name="Unauthorized";
+throw err;
+}
 
     const validPassword = await argon2.verify(user.password,password) 
 
-if(!validPassword) throw new Error("Une erreur s'est produite : l'adresse e-mail et/ou le mot de passe ne correspondent pas.")  
-   
+if(!validPassword) {
+
+const err = new Error("Une erreur s'est produite : l'adresse e-mail et/ou le mot de passe ne correspondent pas.")  
+ err.name ="Unauthorized"  ;
+ throw err;
+}
+
   const token = jwt.sign(
       { id: user.id,
         name: user.name,

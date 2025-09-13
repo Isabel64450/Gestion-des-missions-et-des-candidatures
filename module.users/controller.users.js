@@ -4,7 +4,7 @@ class UserController {
   }
 
 
-  async createUser(req, res) {
+  async createUser(req, res, next) {
     const userData = req.body;
 
     try {
@@ -14,12 +14,11 @@ class UserController {
         user: newUser,
       });
     } catch (error) {
-      console.error('Erreur dans UserController.createUser :', error.message);
-      res.status(500).json({ message: 'Erreur lors de la création de l’utilisateur' });
+      next(error)
     }
   }
 
-async loginUser(req, res) {
+async loginUser(req, res,next) {
   try {    
     const { email, password } = req.body;    
     if (!email || !password) {
@@ -39,8 +38,9 @@ async loginUser(req, res) {
     return res.json({message:'Connexion réussie', user:userWithoutId})    
       
   } catch (err) {
-    console.error("Erreur de connexion :", err);
-    res.status(500).json({ message: "Erreur serveur" });
+    /* console.error("Erreur de connexion :", err);
+    res.status(500).json({ message: "Erreur serveur" }); */
+    next(err)
   }
 }  
 

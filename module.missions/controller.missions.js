@@ -3,12 +3,14 @@ class MissionController {
     this.missionService = missionService;
   }
 
-  async createMission(req, res) {
+  async createMission(req, res, next) {
     try {
       const user =req.user;
       const missionData = req.body;
      if (user.role !== 'association') {
-      return res.status(403).json({ message: "Seules les associations peuvent créer des missions." });
+      const error = new Error("Seules les associations peuvent créer des missions.");
+        error.name = 'Forbidden'; 
+        throw error;
     }      
      missionData.association_id =user.id;
       const missionId = await this.missionService.createMission(missionData);
@@ -18,12 +20,11 @@ class MissionController {
         mission: { id: missionId, ...missionWithoutAssociationId }
       });
     } catch (error) {
-      console.error('MissionController.createMission :', error.message);
-      res.status(500).json({ message: "Erreur lors de la création de la mission" });
+      next(error)
     }
   }
 
- async updateMission(req, res) {
+ async updateMission(req, res, next) {
     const missionId = req.params.id;
     const missionData = req.body;
 
@@ -34,12 +35,11 @@ class MissionController {
         mission: updatedMission
       });
     } catch (error) {
-      console.error('MissionController.updateMission :', error.message);
-      res.status(500).json({ message: error.message });
+      next(error)
     }
   }
 
-async deleteMission(req, res) {
+async deleteMission(req, res, next) {
   const missionId = req.params.id;
 
   try {
@@ -49,23 +49,21 @@ async deleteMission(req, res) {
       message: "Mission supprimée avec succès"
     });
   } catch (error) {
-    console.error('MissionController.deleteMission :', error.message);
-    res.status(500).json({ message: error.message });
+    next(error)
   }
 }
 
-async getAllMissions(req, res) {
+async getAllMissions(req, res, next) {
     try {
       const missions = await this.missionService.getAllMissions();
       res.status(200).json(missions);
     } catch (error) {
-      console.error("Erreur dans MissionController.getAllMissions :", error.message);
-      res.status(500).json({ message: "Erreur lors de la récupération des missions" });
+      next(error)
     }
   }
 
 
-async getMissionsByAssociation(req, res) {
+async getMissionsByAssociation(req, res, next) {
   try {
     const associationId = req.user.id; 
 
@@ -76,24 +74,9 @@ if (missions.length === 0) {
     const missionsWithoutAssoId = missions.map(({ association_id, ...rest }) => rest);
     res.status(200).json(missionsWithoutAssoId);
   } catch (error) {
-    console.error('MissionController.getMissionsByAssociation:', error.message);
-    res.status(500).json({ message: 'Erreur lors de la récupération des missions' });
+    next(error)
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 export default MissionController;

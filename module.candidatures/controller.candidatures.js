@@ -3,14 +3,16 @@ class CandidatureController {
     this.candidatureService = candidatureService;
   }
 
-  async createCandidature(req, res) {
+  async createCandidature(req, res,next) {
     try {
       const userId = req.user.id; 
              
       const { missionId } = req.body;     
 
       if (!missionId) {
-        return res.status(400).json({ error: "Mission manquante" });
+         const error = new Error("Mission manquante");
+        error.name = "ArgumentRequired"; 
+        throw error;
       }
 
       const candidatureId = await this.candidatureService.postuler(userId, missionId);
@@ -21,11 +23,11 @@ class CandidatureController {
       });
 
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      next(error)
     }
   }
 
-async getAllPendingCandidatures(req, res) {
+async getAllPendingCandidatures(req, res,next) {
   try {
     const candidatures = await this.candidatureService.getAllPendingCandidatures();
 
@@ -35,11 +37,10 @@ async getAllPendingCandidatures(req, res) {
 
     res.status(200).json(candidatures);
   } catch (error) {
-    console.error("Erreur dans CandidatureController.getAllPendingCandidatures :", error.message);
-    res.status(500).json({ message: "Erreur lors de la récupération des candidatures en attente" });
+    next(error)
   }
 }
-async updateCandidatureStatus(req, res) {
+async updateCandidatureStatus(req, res, next) {
   const { id } = req.params;
   const { status } = req.body;
   const associationId = req.user.id
@@ -48,11 +49,11 @@ async updateCandidatureStatus(req, res) {
     await this.candidatureService.updateCandidatureStatus(id, status, associationId);
     res.status(200).json({ message: "Statut de la candidature mis à jour avec succès" });
   } catch (error) {
-    res.status(403).json({ message: error.message });
+    next(error)
   }
 }
 
-async getPendingCandidaturesForAssociation(req, res) {
+async getPendingCandidaturesForAssociation(req, res, next) {
   try {
     const associationId = req.user.id; 
 
@@ -64,12 +65,11 @@ async getPendingCandidaturesForAssociation(req, res) {
 
     res.status(200).json(candidatures);
   } catch (error) {
-    console.error('CandidatureController.getPendingCandidaturesForAssociation:', error.message);
-    res.status(500).json({ message: 'Erreur lors de la récupération des candidatures.' });
+   next(error)
   }
 }
 
-async getCandidaturesForBenevole(req, res) {
+async getCandidaturesForBenevole(req, res, next) {
   try {
     const benevoleId = req.user.id;  
 
@@ -81,18 +81,9 @@ async getCandidaturesForBenevole(req, res) {
 
     res.status(200).json(candidatures);
   } catch (error) {
-    console.error("Erreur dans getCandidaturesForBenevole :", error.message);
-    res.status(500).json({ message: "Erreur lors de la récupération des candidatures." });
+    next(error)
   }
 }
-
-
-
-
-
-
-
-
 
 }
 

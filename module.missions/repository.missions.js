@@ -15,7 +15,9 @@ class MissionRepository {
       return result.insertId;
     } catch (err) {
       console.error('Erreur dans MissionRepository.createMission :', err.message);
-      throw new Error("Erreur lors de la création de la mission");
+      const error = new Error("Erreur lors de la création de la mission");
+  error.name = "DatabaseException";
+  throw error;
     }
   }
 
@@ -32,7 +34,9 @@ async updateMission(id, missionData) {
       return result.affectedRows > 0;
     } catch (err) {
       console.error('Erreur dans MissionRepository.updateMission :', err.message);
-      throw new Error('Erreur lors de la mise à jour de la mission');
+      const error = new Error('Erreur lors de la mise à jour de la mission');
+      error.name = "DatabaseException";
+      throw error;
     }
   }
 
@@ -45,7 +49,9 @@ async deleteMission(id) {
     return result.affectedRows > 0;
   } catch (err) {
     console.error('Erreur dans MissionRepository.deleteMission :', err.message);
-    throw new Error("Erreur lors de la suppression de la mission");
+    const error = new Error("Erreur lors de la suppression de la mission");
+      error.name = "DatabaseException";
+      throw error;
   }
 }
 
@@ -67,7 +73,9 @@ async getAllMissions() {
       return rows;
     } catch (err) {
       console.error("Erreur dans MissionRepository.getAllMissions :", err.message);
-      throw err;
+      const error = new Error("Erreur lors de la récupération des missions");
+      error.name = "DatabaseException";
+      throw error;
     }
   }
 
@@ -77,7 +85,12 @@ async findMissionsByAssociation(associationId) {
     [associationId]
   );
   return rows;
-}
+}catch (err) {
+      console.error('Erreur dans MissionRepository.findMissionsByAssociation :', err.message);
+      const error = new Error("Erreur lors de la récupération des missions par association");
+      error.name = "DatabaseException";
+      throw error;
+    }
 
 
 
