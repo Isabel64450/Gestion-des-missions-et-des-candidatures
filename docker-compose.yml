@@ -1,0 +1,32 @@
+services:
+ mariadb:
+  image: mariadb:latest
+  container_name: mariadb
+  environment:
+   - MARIADB_HOST=${MARIADB_HOST}
+   - MARIADB_USER=${MARIADB_USER}
+   - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+   - MARIADB_DATABASE=${MARIADB_DATABASE}
+   
+  volumes:
+   - ./mariadb-data:/var/lib/mysql
+  ports:
+  - '3306:3306'
+
+ nodeapp:
+  build: .
+  container_name: nodeapp
+  restart: always
+  depends_on:
+   - mariadb 
+  environment:
+   - MARIADB_HOST=${MARIADB_HOST}
+   - MARIADB_USER=${MARIADB_USER}
+   - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+   - MARIADB_DATABASE=${MARIADB_DATABASE}
+  ports:
+    - '3000:3000'
+  volumes:
+    - .:/app
+  working_dir: /app
+  command: nodemon --legacy-watch app.js     

@@ -7,8 +7,10 @@ class CandidatureService {
     const alreadyPending = await this.candidatureRepository.hasPendingCandidature(userId);
     
     if (alreadyPending) {
-      throw new Error("Vous avez déjà une candidature en attente. Veuillez attendre une réponse avant de postuler à une autre mission.");
-    }
+    const error = new Error("Vous avez déjà une candidature en attente. Veuillez attendre une réponse avant de postuler à une autre mission.");
+    error.name = "Forbidden"; 
+    throw error;
+  }
 
     const candidatureId = await this.candidatureRepository.createCandidature(userId, missionId);
     return candidatureId;
@@ -24,18 +26,24 @@ async updateCandidatureStatus(candidatureId, newStatus, associationIdFromToken) 
   const allowedStatuses = ['acceptée', 'refusée'];
 
   if (!allowedStatuses.includes(newStatus)) {
-    throw new Error("Statut invalide. Seuls 'acceptée' ou 'refusée' sont autorisés.");
+    const error = new Error("Statut invalide. Seuls 'acceptée' ou 'refusée' sont autorisés.");
+    error.name = "ValidationError"; 
+    throw error;
   }
 
  
   const ownerId = await this.candidatureRepository.getAssociationIdFromCandidature(candidatureId);
 
   if (!ownerId) {
-    throw new Error("Candidature non trouvée ou mission inconnue.");
+    const error = new Error("Candidature non trouvée ou mission inconnue.");
+    error.name = "NotFound"; 
+    throw error;
   }
 
   if (ownerId !== associationIdFromToken) {
-    throw new Error("Vous n’êtes pas autorisé à modifier cette candidature.");
+    const error = new Error("Vous n’êtes pas autorisé à modifier cette candidature.");
+    error.name = "Forbidden"; 
+    throw error;
   }
 
  

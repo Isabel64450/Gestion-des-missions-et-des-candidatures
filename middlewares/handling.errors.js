@@ -21,10 +21,10 @@ const errorHandler = (err, req, res, next) => {
       return res.status(401).json({ message: 'Accès non autorisé' });
 
     case 'Forbidden':
-      return res.status(403).json({ message: 'Accès interdit' });
+      return res.status(403).json({ message: err.message });
 
     case 'ValidationError':
-      return res.status(422).json({ message: 'Données invalides' });
+      return res.status(422).json({ message: err.message });
 
     default:
       return res.status(500).json({ message: 'Erreur serveur inattendue' });
